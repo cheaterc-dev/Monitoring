@@ -1,0 +1,11 @@
+groups:
+  - name: Ping Alerts
+    rules:
+      - alert: HostDown
+        expr: ping_packets_received{job="zabbix"} == 0
+        for: 1s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host is down"
+          description: "Host {{ $labels.host_name }} (URL: {{ $labels.url }}) is not responding to pings."

@@ -1,0 +1,11 @@
+groups:
+- name: example
+  rules:
+  - alert: HighCPUUsage
+    expr: cpu_60_secs > 80
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High CPU usage on [IP:10.107.1.33] 2C Upper HPE OfficeConnect Switch 1920S 48G 4SFP JL382A"
+      description: "CPU usage has been over 80% for the last 1 minutes."

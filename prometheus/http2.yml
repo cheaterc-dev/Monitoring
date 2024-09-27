@@ -1,0 +1,11 @@
+groups:
+- name: http_response_alerts
+  rules:
+  - alert: HttpResponseError
+    expr: http_response_http_response_code{status_code!="200"} > 0
+    for: 10s
+    labels:
+      severity: critical
+    annotations:
+      summary: "HTTP Response Error"
+      description: "HTTP request returned a status code of {{ $value }} from {{ $labels.server }}."
