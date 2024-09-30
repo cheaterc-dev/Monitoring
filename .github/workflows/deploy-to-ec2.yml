@@ -20,8 +20,8 @@ jobs:
 
       - name: Test SSH Connection to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.IPAWS }} "hostname"
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "hostname"
 
       - name: Pull and deploy with Docker Compose on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.IPAWS }} "cd /home/docker-compose-dir && docker-compose pull && docker-compose up -d"
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "cd /home/docker-compose-dir && docker-compose pull && docker-compose up -d"
