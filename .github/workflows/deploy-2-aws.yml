@@ -1,0 +1,35 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - master  # или любая ветка, на которую вы хотите реагировать
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.AWS_KEY }}
+
+      - name: Test SSH Connection to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "hostname"
+
+      - name: Create directory on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "mkdir -p /home/docker-compose-dir"
+
+      - name: Copy files to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -r ./* ubuntu@${{ secrets.AWS_IP }}:/home/docker-compose-dir
+
+      - name: Pull and deploy with Docker Compose on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "cd /home/docker-compose-dir && docker-compose pull && docker-compose up -d"
