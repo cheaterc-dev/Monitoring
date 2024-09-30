@@ -4,7 +4,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prometheus:/etc/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus
       - ./prometheus/http2.yml:/etc/prometheus
       - ./prometheus/icmp1.yml:/etc/prometheus
       - ./prometheus/jsonip.yml:/etc/prometheus
