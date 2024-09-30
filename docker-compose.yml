@@ -7,7 +7,6 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus
       - ./prometheus/http2.yml:/etc/prometheus
       - ./prometheus/icmp1.yml:/etc/prometheus
-      - ./prometheus/jsonip.yml:/etc/prometheus
     ports:
       - "9090:9090"
     networks:
