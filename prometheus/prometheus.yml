@@ -36,7 +36,7 @@ rule_files:
 
 
 scrape_configs:
-  - job_name: 'promet1heus1'
+  - job_name: 'promettheus'
     static_configs:
       - targets: ['10.107.128.31:9090']
 
