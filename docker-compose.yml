@@ -4,9 +4,9 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus
-      - ./prometheus/http2.yml:/etc/prometheus
-      - ./prometheus/icmp1.yml:/etc/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/http2.yml:/etc/prometheus/http2.yml
+      - ./prometheus/icmp1.yml:/etc/prometheus/icmp1.yml
     ports:
       - "9090:9090"
     networks:
