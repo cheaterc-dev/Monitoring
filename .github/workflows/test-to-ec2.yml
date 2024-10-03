@@ -16,4 +16,4 @@ jobs:
 
       - name: Deploy on Test Git Server
         run: |
-            cd /home/ && docker-compose pull && docker-compose up -d"
+            cd /home/ && docker-compose pull && docker-compose up -d
