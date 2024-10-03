@@ -30,3 +30,27 @@ jobs:
       - name: Pull and start containers
         run: |
           cd /home/runner/work/Monitoring/Monitoring && docker-compose pull && docker-compose up -d
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # Указывает, что этот шаг зависит от успешного завершения шага test
+
+    if: success()  # Деплой будет выполнен только в случае успешного завершения тестов
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.AWS_KEY }}
+
+      - name: Test SSH Connection to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "hostname"
+
+      - name: Pull and deploy with Docker Compose on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "cd /home/docker-compose-dir && docker-compose pull && docker-compose up -d"
