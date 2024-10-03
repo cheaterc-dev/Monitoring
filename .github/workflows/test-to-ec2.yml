@@ -3,7 +3,7 @@ name: Deploy to Test Git Server
 on:
   push:
     branches:
-      - test  # Ветка для тестирования
+      - master  # Ветка для тестирования
 
 jobs:
   test:
