@@ -53,4 +53,4 @@ jobs:
 
       - name: Pull and deploy with Docker Compose on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "cd /home/runner/work/Monitoring/Monitoring && docker-compose pull && docker-compose up -d"
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_IP }} "cd /home/ && docker-compose pull && docker-compose up -d"
