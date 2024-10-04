@@ -1,0 +1,78 @@
+name: TEST2 Deplou
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    env:
+      image_id: "ami-0084a47cc718c111a"
+      key_name: "KEY"
+      security_group: "sg-0a39b9996ec6042dc"
+      subnet: "subnet-0c13d15f18758d199"
+      instance_type: "t2.micro"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+          verbose: false
+          arch: amd64
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Create EC2
+        id: create_ec2
+        run: |
+          INSTANCE_ID=$(aws ec2 run-instances --image-id ${{ env.image_id }} --count 1 --instance-type ${{ env.instance_type }} --key-name ${{ env.key_name }} --security-group-ids ${{ env.security_group }} --subnet-id ${{ env.subnet }} --query 'Instances[0].InstanceId' --output text)
+          echo "Instance ID: $INSTANCE_ID"
+          echo "::set-output name=instance_id::$INSTANCE_ID"
+
+      - name: Wait for EC2 to be ready
+        run: |
+          INSTANCE_ID=${{ steps.create_ec2.outputs.instance_id }}
+          aws ec2 wait instance-status-ok --instance-ids $INSTANCE_ID
+
+      - name: Get EC2 public IP
+        id: ec2_info
+        run: |
+          INSTANCE_ID=${{ steps.create_ec2.outputs.instance_id }}
+          PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+          echo "Public IP: $PUBLIC_IP"
+          echo "::set-output name=public_ip::$PUBLIC_IP"
+
+      - name: Connect to EC2 via SSH and set up Docker
+        run: |
+          PUBLIC_IP=${{ steps.ec2_info.outputs.public_ip }}
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/${{ env.key_name }} ubuntu@$PUBLIC_IP << EOF
+            sudo apt-get update
+            sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+            sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+          EOF
+
+      - name: Pull and start containers on EC2
+        run: |
+          PUBLIC_IP=${{ steps.ec2_info.outputs.public_ip }}
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/${{ env.key_name }} ubuntu@$PUBLIC_IP << EOF
+            cd /home/ubuntu/Monitoring
+            docker-compose pull
+            docker-compose up -d
+          EOF
