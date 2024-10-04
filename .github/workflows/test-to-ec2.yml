@@ -33,6 +33,12 @@ jobs:
 
 
   deploy:
+    env:
+      image-id:
+      key-name:
+      security_group:
+      subnet:
+
     runs-on: ubuntu-latest
     needs: test  # Указывает, что этот шаг зависит от успешного завершения шага test
 
