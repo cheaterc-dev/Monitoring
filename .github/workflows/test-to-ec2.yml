@@ -33,7 +33,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1  # Укажите ваш регион, или передайте его через секреты
+          aws-region: eu-central-1  # Укажрегион, или передайте его через секреты
 
       - name: Create EC2
         run: |
