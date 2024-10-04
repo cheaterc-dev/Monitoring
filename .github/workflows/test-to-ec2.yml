@@ -9,7 +9,7 @@ jobs:
   test:
     env:
       image_id: "ami-0084a47cc718c111a"
-      key_name: "KEY.pem"
+      key_name: "KEY"
       security_group: "sg-0a39b9996ec6042dc"
       subnet: "subnet-0c13d15f18758d199"
       type: "t2.micro"
